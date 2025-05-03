@@ -28,5 +28,6 @@ public interface IAction {
 		}
 	}
 
+	/** 処理実装クラス */
 	public void execute(Model model);
 }

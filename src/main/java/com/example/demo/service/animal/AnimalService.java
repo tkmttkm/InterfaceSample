@@ -38,28 +38,50 @@ public final class AnimalService
 		final AnimalForm form = (AnimalForm) model.getAttribute("form");
 
 		final BindingResult bindingResult = new BeanPropertyBindingResult(form, "form");
-		springValidator.validate(form, bindingResult);
-
-		if (bindingResult.hasErrors())
+		if (!validation(model, form, bindingResult))
 		{
-			model.addAttribute("org.springframework.validation.BindingResult.form", bindingResult);
 			return;
 		}
 
-		final int                         selectedAnimal = form.getAnimalAsInt();
-		final Optional<AnimalKindsEntity> kinds_data     = animalKindsRepository.findById(selectedAnimal);
+		final Optional<AnimalKindsEntity> kinds_data     = getSelectedKindsData(model, bindingResult, form);
+		if (kinds_data.isEmpty())
+		{
+			return;
+		}
+
+		final List<AnimalNameEntity> name_data = animalNameRepository.findByPrimaryKeysKindsId(form.getAnimalAsInt());
+
+		form.setKinds_data(kinds_data.get());
+		form.setName_data(name_data);
+		model.addAttribute("form", form);
+	}
+
+	private Optional<AnimalKindsEntity> getSelectedKindsData(
+			final Model model, final BindingResult bindingResult, final AnimalForm form
+			)
+	{
+		final Optional<AnimalKindsEntity> kinds_data = animalKindsRepository.findById(form.getAnimalAsInt());
 
 		if (!kinds_data.isPresent())
 		{
 			bindingResult.rejectValue("animal", "form.animal.notexist");
 			model.addAttribute("org.springframework.validation.BindingResult.form", bindingResult);
-			return;
+			return Optional.empty();
+		}
+		return kinds_data;
+	}
+
+	private boolean validation(final Model model, final AnimalForm form, final BindingResult bindingResult)
+	{
+		springValidator.validate(form, bindingResult);
+
+		if (bindingResult.hasErrors())
+		{
+			model.addAttribute("org.springframework.validation.BindingResult.form", bindingResult);
+			return false;
 		}
 
-		final List<AnimalNameEntity> name_data = animalNameRepository.findByPrimaryKeysKindsId(selectedAnimal);
-		form.setKinds_data(kinds_data.get());
-		form.setName_data(name_data);
-		model.addAttribute("form", form);
+		return true;
 	}
 
 	/** 画面クリアボタン押下時の処理 */
@@ -71,6 +93,16 @@ public final class AnimalService
 
 		form.setKinds_data(null);
 		form.setName_data(Collections.emptyList());
+	}
+
+	/**
+	 * 画面表示ModelAttribute用
+	 *
+	 * @return {@code List<AnimalKindsEntity>} animal_kindsテーブルの全データ
+	 */
+	public List<AnimalKindsEntity> getAllAnimalKindsData()
+	{
+		return animalKindsRepository.findAll();
 	}
 
 }

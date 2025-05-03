@@ -1,6 +1,7 @@
 package com.example.demo.controller.animal;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.demo.entity.AnimalKindsEntity;
 import com.example.demo.form.AnimalForm;
 import com.example.demo.service.animal.AnimalService;
 
@@ -32,10 +34,12 @@ public final class AnimalController
 	@ModelAttribute("animals")
 	public Map<String, String> animals()
 	{
+		final List<AnimalKindsEntity>   animal_kinds = animalService.getAllAnimalKindsData();
 		final Map<String, String> animals = new TreeMap<String, String>();
-		animals.put("1", "ねこ");
-		animals.put("2", "いぬ");
-		animals.put("3", "さる");
+		for (final AnimalKindsEntity animal_kind : animal_kinds)
+		{
+			animals.put(animal_kind.getId().toString(), animal_kind.getName());
+		}
 		return animals;
 	}
 
@@ -84,15 +88,16 @@ public final class AnimalController
 	{
 		model.addAttribute("form", animalForm);
 
+		// 押されたボタンにより、処理を分岐
 		switch (action)
 		{
-			case "display":
+			case "display": // 表示ボタン
 				animalService.display(model);
 				break;
-			case "clear":
+			case "clear": // 画面クリアボタン
 				animalService.clear(model);
 				break;
-			default:
+			default: // 初期表示ボタン
 				return "redirect:/animal/index";
 		}
 

@@ -11,7 +11,12 @@ import com.example.demo.service.animalinterface.ianimal.IAnimal;
 
 import lombok.RequiredArgsConstructor;
 
-/** 選択された動物による処理分岐のクラス。このクラスを継承して使用 */
+/**
+ * <pre>
+ * 選択された動物による処理分岐のクラス。このクラスを継承して使用
+ * DIコンテナ内の共通したリポジトリ―を使用するため、抽象クラス作成
+ * </pre>
+ */
 @RequiredArgsConstructor
 public abstract class Animal implements IAnimal
 {

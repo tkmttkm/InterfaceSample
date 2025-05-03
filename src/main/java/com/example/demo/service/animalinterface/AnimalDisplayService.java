@@ -42,30 +42,60 @@ public final class AnimalDisplayService implements IAction
 		model.addAttribute("test", "表示");
 
 		final AnimalForm form = (AnimalForm) model.getAttribute("form");
-
 		final BindingResult bindingResult = new BeanPropertyBindingResult(form, "form");
+
+		if (!validation(model, form, bindingResult))
+		{
+			return;
+		}
+
+		final Animal selected_animal = getSelectedAnimal(form);
+
+		final Optional<AnimalKindsEntity> kinds_data = getSelectedKindsData(model, bindingResult, selected_animal);
+		if (kinds_data.isEmpty())
+		{
+			return;
+		}
+
+		final List<AnimalNameEntity> name_data = selected_animal.getAnimalNameDataByKindsId();
+
+		form.setKinds_data(kinds_data.get());
+		form.setName_data(name_data);
+		model.addAttribute("form", form);
+	}
+
+	private Optional<AnimalKindsEntity> getSelectedKindsData(
+			final Model model, final BindingResult bindingResult, final Animal selected_animal
+			)
+	{
+		final Optional<AnimalKindsEntity> kinds_data = selected_animal.getAnimalKindsDataByPrimaryKey();
+		if (kinds_data.isEmpty())
+		{
+			bindingResult.rejectValue("animal", "form.animal.notexist");
+			model.addAttribute("org.springframework.validation.BindingResult.form", bindingResult);
+			return Optional.empty();
+		}
+
+		return kinds_data;
+	}
+
+	private boolean validation(final Model model, final AnimalForm form, final BindingResult bindingResult)
+	{
 		springValidator.validate(form, bindingResult);
 
 		if (bindingResult.hasErrors())
 		{
 			model.addAttribute("org.springframework.validation.BindingResult.form", bindingResult);
-			return;
+			return false;
 		}
 
-		final int    selectedAnimal  = form.getAnimalAsInt();
-		final Animal selected_animal = animals.get(selectedAnimal);
+		return true;
+	}
 
-		final Optional<AnimalKindsEntity> kinds_data = selected_animal.getAnimalKindsDataByPrimaryKey();
-		if (!kinds_data.isPresent())
-		{
-			bindingResult.rejectValue("animal", "form.animal.notexist");
-			model.addAttribute("org.springframework.validation.BindingResult.form", bindingResult);
-		}
-
-		final List<AnimalNameEntity> name_data = selected_animal.getAnimalNameDataByKindsId();
-		form.setKinds_data(kinds_data.get());
-		form.setName_data(name_data);
-		model.addAttribute("form", form);
+	private Animal getSelectedAnimal(final AnimalForm form)
+	{
+		final int selectedAnimal = form.getAnimalAsInt();
+		return animals.get(selectedAnimal);
 	}
 
 }
