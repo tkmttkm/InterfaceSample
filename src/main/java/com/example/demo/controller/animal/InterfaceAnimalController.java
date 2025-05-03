@@ -99,7 +99,7 @@ public class InterfaceAnimalController
 
 	@PostMapping("/submit")
 	public String execute(
-			@RequestParam final String action,
+			@RequestParam("action") final String action,
 			@ModelAttribute("form") final AnimalForm animalForm,
 			final BindingResult error,
 			final Model model
