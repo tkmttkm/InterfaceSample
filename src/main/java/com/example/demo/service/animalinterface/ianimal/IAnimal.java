@@ -9,6 +9,9 @@ public interface IAnimal
 	/** animal_kindsのid */
 	public int id();
 
+	/** animal_kindsのname */
+	public String name();
+
 	/** animal_nameのkinds_id */
 	default int kinds_id()
 	{

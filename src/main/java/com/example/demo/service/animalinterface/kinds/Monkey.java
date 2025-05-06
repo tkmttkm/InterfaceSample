@@ -20,4 +20,10 @@ public final class Monkey extends Animal
 		return 3;
 	}
 
+	@Override
+	public String name()
+	{
+		return "さる";
+	}
+
 }

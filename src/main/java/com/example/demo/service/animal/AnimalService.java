@@ -23,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public final class AnimalService
 {
-
 	@Autowired
 	private Validator springValidator;
 
@@ -33,9 +32,20 @@ public final class AnimalService
 	/** 表示ボタン押下時の処理 */
 	public void display(final Model model)
 	{
-		model.addAttribute("test", "表示");
-
 		final AnimalForm form = (AnimalForm) model.getAttribute("form");
+
+		switch (form.getAnimalAsInt())
+		{
+			case 1:
+				model.addAttribute("test", "ねこ表示");
+				break;
+			case 2:
+				model.addAttribute("test", "いぬ表示");
+				break;
+			case 3:
+				model.addAttribute("test", "さる表示");
+				break;
+		}
 
 		final BindingResult bindingResult = new BeanPropertyBindingResult(form, "form");
 		if (!validation(model, form, bindingResult))
@@ -87,9 +97,20 @@ public final class AnimalService
 	/** 画面クリアボタン押下時の処理 */
 	public void clear(final Model model)
 	{
-		model.addAttribute("test", "画面クリア");
-
 		final AnimalForm form = (AnimalForm) model.getAttribute("form");
+
+		switch (form.getAnimalAsInt())
+		{
+			case 1:
+				model.addAttribute("test", "ねこ画面クリア");
+				break;
+			case 2:
+				model.addAttribute("test", "いぬ画面クリア");
+				break;
+			case 3:
+				model.addAttribute("test", "さる画面クリア");
+				break;
+		}
 
 		form.setKinds_data(null);
 		form.setName_data(Collections.emptyList());

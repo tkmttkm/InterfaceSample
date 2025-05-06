@@ -20,4 +20,10 @@ public final class Dog extends Animal
 		return 2;
 	}
 
+	@Override
+	public String name()
+	{
+		return "いぬ";
+	}
+
 }

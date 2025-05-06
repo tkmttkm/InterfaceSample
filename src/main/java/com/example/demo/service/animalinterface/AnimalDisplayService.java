@@ -39,9 +39,12 @@ public final class AnimalDisplayService implements IAction
 	@Override
 	public void execute(final Model model)
 	{
-		model.addAttribute("test", "表示");
+		final AnimalForm form              = (AnimalForm) model.getAttribute("form");
+		final Animal     selected_animal   = AnimalCommonService.getSelectedAnimal(form, this.animals);
+		final String     animal_kinds_name = selected_animal == null ? "" : selected_animal.name();
 
-		final AnimalForm form = (AnimalForm) model.getAttribute("form");
+		model.addAttribute("test", animal_kinds_name + "表示");
+
 		final BindingResult bindingResult = new BeanPropertyBindingResult(form, "form");
 
 		if (!validation(model, form, bindingResult))
@@ -49,7 +52,6 @@ public final class AnimalDisplayService implements IAction
 			return;
 		}
 
-		final Animal selected_animal = getSelectedAnimal(form);
 
 		final Optional<AnimalKindsEntity> kinds_data = getSelectedKindsData(model, bindingResult, selected_animal);
 		if (kinds_data.isEmpty())
@@ -90,12 +92,6 @@ public final class AnimalDisplayService implements IAction
 		}
 
 		return true;
-	}
-
-	private Animal getSelectedAnimal(final AnimalForm form)
-	{
-		final int selectedAnimal = form.getAnimalAsInt();
-		return animals.get(selectedAnimal);
 	}
 
 }
