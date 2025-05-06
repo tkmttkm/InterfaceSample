@@ -1,2 +1,2 @@
 # InterfaceSample
-switch文のインターフェース化
+switch文のInterface化
